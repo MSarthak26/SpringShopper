@@ -8,11 +8,19 @@ import SpringBootEcom.payload.ProductDTO;
 import SpringBootEcom.payload.ProductResponse;
 import SpringBootEcom.repository.CategoryRepository;
 import SpringBootEcom.repository.ProductRepository;
+import jakarta.validation.Valid;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 public class ProductServiceImpl implements ProductService{
@@ -24,6 +32,12 @@ public class ProductServiceImpl implements ProductService{
 
     @Autowired
     private ModelMapper modelMapper;
+
+    @Autowired
+    private FileService fileService;
+
+    @Value("${project.image}")
+    private String path;
 
     @Override
     public ProductDTO addProduct(ProductDTO productDTO, Long categoryId) {
@@ -99,4 +113,21 @@ public class ProductServiceImpl implements ProductService{
         productRepository.delete(deletedProduct);
         return modelMapper.map(deletedProduct,ProductDTO.class);
     }
+
+    @Override
+    public ProductDTO updateProductImage(Long productId, MultipartFile image) throws IOException {
+        Product existingProduct = productRepository.findById(productId).orElseThrow(()->new ResourceNotFoundException("product","product_id",productId));
+
+        String fileName = fileService.uploadImage(path,image);
+
+        existingProduct.setImage(fileName);
+
+        Product savedProduct = productRepository.save(existingProduct);
+
+        return modelMapper.map(savedProduct,ProductDTO.class);
+
+
+    }
+
+
 }
