@@ -60,6 +60,10 @@ public class User {
     private Set<Role> roles = new HashSet<>();
 
     @ToString.Exclude
+    @OneToOne(mappedBy = "user",cascade = {CascadeType.PERSIST,CascadeType.MERGE},orphanRemoval = true)
+    private Cart cart;
+
+    @ToString.Exclude
     @Getter
     @Setter
     @ManyToMany(cascade = {CascadeType.MERGE,CascadeType.PERSIST})
