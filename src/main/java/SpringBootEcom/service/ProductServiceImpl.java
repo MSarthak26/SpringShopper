@@ -2,10 +2,14 @@ package SpringBootEcom.service;
 
 import SpringBootEcom.exceptions.APIException;
 import SpringBootEcom.exceptions.ResourceNotFoundException;
+import SpringBootEcom.model.Cart;
+import SpringBootEcom.model.CartItem;
 import SpringBootEcom.model.Category;
 import SpringBootEcom.model.Product;
+import SpringBootEcom.payload.CartDTO;
 import SpringBootEcom.payload.ProductDTO;
 import SpringBootEcom.payload.ProductResponse;
+import SpringBootEcom.repository.CartRepository;
 import SpringBootEcom.repository.CategoryRepository;
 import SpringBootEcom.repository.ProductRepository;
 import org.modelmapper.ModelMapper;
@@ -34,6 +38,12 @@ public class ProductServiceImpl implements ProductService{
 
     @Autowired
     private FileService fileService;
+
+    @Autowired
+    private CartRepository cartRepository;
+
+    @Autowired
+    private CartService cartService;
 
     @Value("${project.image}")
     private String path;
@@ -153,12 +163,27 @@ public class ProductServiceImpl implements ProductService{
 
         Product savedProduct = productRepository.save(existingProduct);
 
+        List<Cart> carts = cartRepository.findCartsByProductId(productId);
+
+        List<CartDTO>cartDTOS = carts.stream().map(cart->{
+            CartDTO cartDTO = modelMapper.map(cart,CartDTO.class);
+            List<ProductDTO> productDTOS = cart.getCartItems().stream().map(p->modelMapper.map(p.getProduct(),ProductDTO.class)).toList();
+            cartDTO.setProducts(productDTOS);
+            return cartDTO;
+        }).toList();
+
+        cartDTOS.forEach(cartDTO -> cartService.updateProductsInCart(cartDTO.getCartId(),productId));
+
         return modelMapper.map(savedProduct,ProductDTO.class);
     }
 
     @Override
     public ProductDTO deleteProduct(Long productId) {
         Product deletedProduct = productRepository.findById(productId).orElseThrow(()->new ResourceNotFoundException("product","product_id",productId));
+
+        List<Cart> carts = cartRepository.findCartsByProductId(productId);
+        carts.forEach(cart -> cartService.deleteProductFromCart(cart.getCartId(),productId));
+
         productRepository.delete(deletedProduct);
         return modelMapper.map(deletedProduct,ProductDTO.class);
     }
