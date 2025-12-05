@@ -20,6 +20,8 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.stream.Stream;
 
+import static java.util.stream.Collectors.toList;
+
 @Service
 public class CartServiceImpl implements CartService{
 
@@ -102,7 +104,11 @@ public class CartServiceImpl implements CartService{
         }
         List<CartDTO> cartDTOList = carts.stream().map(cart -> {
             CartDTO cartDTO = modelMapper.map(cart,CartDTO.class);
-            List<ProductDTO>productDTOS = cart.getCartItems().stream().map(cartItem -> modelMapper.map(cartItem.getProduct(),ProductDTO.class)).toList();
+            List<ProductDTO>productDTOS = cart.getCartItems().stream().map(cartItem -> {
+                ProductDTO productDTO = modelMapper.map(cartItem.getProduct(),ProductDTO.class);
+                productDTO.setQuantity(cartItem.getQuantity());
+                return productDTO;
+            }).toList();
             cartDTO.setProducts(productDTOS);
             return cartDTO;
         }).toList();
