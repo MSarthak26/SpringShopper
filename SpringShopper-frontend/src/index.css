@@ -29,4 +29,14 @@
     #f5f5f5,
     #eae7dc
   );
+  
+}
+@layer base {
+  *,
+  ::after,
+  ::before,
+  ::backdrop,
+  ::file-selector-button {
+    border-color: var(--color-gray-200, currentcolor);
+  }
 }
