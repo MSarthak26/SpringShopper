@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { FaShoppingCart } from "react-icons/fa";
 import ProductViewModal from "./ProductViewModal";
+import { MdCurrencyRupee } from "react-icons/md";
 
 const ProductCard = (
     {
@@ -50,12 +51,14 @@ const ProductCard = (
                 <div className="flex items-center justify-between"> 
                 {specialPrice ? (
                      <div className="flex flex-col">
-                    <span className="text-gray-400 line-through">
-                        ${Number(price).toFixed(2)}
+                    <span className="text-gray-400 line-through flex items-center gap-1">
+                         <MdCurrencyRupee />{Number(price).toFixed(2)}
                     </span>
-                    <span className="text-slate-700 font-bold text-xl">
-                        ${Number(specialPrice).toFixed(2)}
+
+                    <span className="text-slate-700 font-bold text-xl flex items-center gap-1">
+                    <MdCurrencyRupee />{Number(specialPrice).toFixed(2)}
                     </span>
+
                 </div>
                 ) : (
                     <span className="text-slate-700 font-bold text-xl">

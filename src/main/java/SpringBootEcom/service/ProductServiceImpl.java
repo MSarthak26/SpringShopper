@@ -107,7 +107,8 @@ public class ProductServiceImpl implements ProductService{
         productResponse.setContent(productDTOS);
         productResponse.setPageNumber(productPage.getNumber());
         productResponse.setPageSize(productPage.getSize());
-        productResponse.setTotalElements((long) productPage.getTotalPages());
+        productResponse.setTotalElements((long) productPage.getTotalElements());
+        productResponse.setTotalPages(productPage.getTotalPages());
         productResponse.setLastPage(productPage.isLast());
         return productResponse;
     }
