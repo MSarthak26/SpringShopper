@@ -22,7 +22,7 @@ import java.util.Optional;
 public class CategoryServiceImpl implements CategoryService{
 
 //    private List<Category> categories = new ArrayList<>();
-    private Long nextId = 1L;
+
 
     @Autowired
     private CategoryRepository categoryRepository;
@@ -63,7 +63,7 @@ public class CategoryServiceImpl implements CategoryService{
         if (categoryFromDB!=null){
             throw new APIException("Category with name " + category.getCategoryName() + " already exists");
         }
-        category.setCategoryId(nextId++);
+//        category.setCategoryId(nextId++);
         Category savedCategory = categoryRepository.save(category);
         CategoryDTO savedCategoryDTO = modelMapper.map(savedCategory,CategoryDTO.class);
 

@@ -3,7 +3,6 @@ package SpringBootEcom.service;
 import SpringBootEcom.exceptions.APIException;
 import SpringBootEcom.exceptions.ResourceNotFoundException;
 import SpringBootEcom.model.Cart;
-import SpringBootEcom.model.CartItem;
 import SpringBootEcom.model.Category;
 import SpringBootEcom.model.Product;
 import SpringBootEcom.payload.CartDTO;
@@ -12,6 +11,7 @@ import SpringBootEcom.payload.ProductResponse;
 import SpringBootEcom.repository.CartRepository;
 import SpringBootEcom.repository.CategoryRepository;
 import SpringBootEcom.repository.ProductRepository;
+import jakarta.persistence.criteria.Join;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -19,13 +19,12 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
-
-import static java.util.stream.Collectors.toList;
 
 @Service
 public class ProductServiceImpl implements ProductService{
@@ -74,14 +73,26 @@ public class ProductServiceImpl implements ProductService{
     }
 
     @Override
-    public ProductResponse getAllProducts(Integer pageNumber, Integer pageSize, String sortBy, String sortOrder) {
+    public ProductResponse getAllProducts(Integer pageNumber, Integer pageSize, String sortBy, String sortOrder, String keyword, String category) {
 
         Sort sortByandOrder = sortOrder.equalsIgnoreCase("asc") ?
                 Sort.by(sortBy).ascending() :
                 Sort.by(sortBy).descending();
 
         Pageable pageDetails = PageRequest.of(pageNumber,pageSize,sortByandOrder);
-        Page<Product> productPage = productRepository.findAll(pageDetails);
+        Specification<Product> spec = Specification.where(null);
+        if(keyword != null && !keyword.isEmpty()){
+            spec = spec.and(((root, query, criteriaBuilder) ->
+                    criteriaBuilder.like(criteriaBuilder.lower(root.get("productName")),"%" + keyword.toLowerCase() + "%")));
+        }
+
+        if(category != null && !category.isEmpty()){
+            spec = spec.and(((root, query, criteriaBuilder) ->
+                    criteriaBuilder.like(root.get("category").get("categoryName"),category)));
+        }
+
+
+        Page<Product> productPage = productRepository.findAll(spec,pageDetails);
 
         List<Product> products = productPage.getContent();
         if (products.isEmpty()){
