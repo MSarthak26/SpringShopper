@@ -14,7 +14,7 @@ const Navbar = () => {
             <div className="lg:px-14 sm:px-8 w-full flex justify-between">
                 <Link to = "/" className="flex items-center text-2xl font-bold"> 
                     <FaStore className="mr-2 text-3xl"/>
-                    <span className="font-[poppins]">SpringStore</span>
+                    <span className="font-[poppins]">SpringShopper</span>
                 </Link>
 
                 <ul className={`flex sm:gap-10 gap-4 sm:items-center text-slate-800 sm:static absolute left-0 top-[70px] sm:shadow-none shadow-md ${
