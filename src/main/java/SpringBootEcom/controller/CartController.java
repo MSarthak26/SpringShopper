@@ -3,6 +3,7 @@ package SpringBootEcom.controller;
 import SpringBootEcom.Util.AuthUtil;
 import SpringBootEcom.model.Cart;
 import SpringBootEcom.payload.CartDTO;
+import SpringBootEcom.payload.CartItemDTO;
 import SpringBootEcom.payload.ProductDTO;
 import SpringBootEcom.repository.CartRepository;
 import SpringBootEcom.service.CartService;
@@ -30,6 +31,11 @@ public class CartController {
     @Autowired
     private ModelMapper modelMapper;
 
+    @PostMapping("/cart/create")
+    public ResponseEntity<String> createOrUpdateCart(@RequestBody List<CartItemDTO> cartItems){
+        String response = cartService.createOrUpdateCartWithItems(cartItems);
+        return new ResponseEntity<>(response, HttpStatus.CREATED);
+    }
 
     @PostMapping("/carts/products/{productId}/quantity/{quantity}")
     public ResponseEntity<CartDTO> addProductToCart(@PathVariable Long productId,@PathVariable Integer quantity){

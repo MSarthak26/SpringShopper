@@ -8,9 +8,7 @@ const PrivateRoute = ({publicPage = false}) => {
         return user ? <Navigate to="/" /> : <Outlet />
     }
 
-  return (
-    <div>PrivateRoute</div>
-  )
+    return user ? <Outlet /> : <Navigate to="/login" replace />;
 }
 
 export default PrivateRoute

@@ -1,6 +1,7 @@
 package SpringBootEcom.service;
 
 import SpringBootEcom.payload.CartDTO;
+import SpringBootEcom.payload.CartItemDTO;
 import jakarta.transaction.Transactional;
 
 import java.util.List;
@@ -18,4 +19,6 @@ public interface CartService {
     String deleteProductFromCart(Long cartId, Long productId);
 
     void updateProductsInCart(Long cartId, Long productId);
+
+    String createOrUpdateCartWithItems(List<CartItemDTO> cartItems);
 }
