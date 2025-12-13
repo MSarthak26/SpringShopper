@@ -1,5 +1,5 @@
 export const formatPrice = (amount) => {
- return new Intl.NumberFormat("en-US", {
+ return new Intl.NumberFormat("en-IN", {
     style: "currency",
     currency: "INR",
  }).format(amount);
@@ -7,8 +7,9 @@ export const formatPrice = (amount) => {
 
 
 export const formatPriceCalculation = (quantity, price) => {
-   return (Number(quantity) * Number(price)).toFixed(2);
-  }
+  const total = Number(quantity) * Number(price);
+  return formatPrice(total);
+};
 
 
 export const formatRevenue = (value) => {
