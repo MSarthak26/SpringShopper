@@ -4,6 +4,8 @@ import { errorReducer } from "./errorReducrs";
 import { cartReducer } from "./cartReducer";
 import { authReducer } from "./authReducer";
 import { paymentMethodReducer } from "./paymentMethodReducer";
+import { adminReducer } from "./adminReducer";
+import { orderReducer } from "./orderReducer";
 
 const cartItems = localStorage.getItem("cartItems")
     ? JSON.parse(localStorage.getItem("cartItems")) : [];
@@ -27,6 +29,8 @@ export const store = configureStore({
         carts : cartReducer,
         auth : authReducer,
         payment : paymentMethodReducer,
+        admin : adminReducer,
+        order : orderReducer,  
 
     },
     preloadedState: initialState,
