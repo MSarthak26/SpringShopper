@@ -347,7 +347,7 @@ export const updateOrderStatusFromDashboard =
     try {
         setLoader(true);
         const endpoint = isAdmin ? "/admin/orders/" : "/seller/orders/";
-        const { data } = await api.put(`${endpoint}${orderId}/status`, { status: orderStatus});
+        const { data } = await api.put(`/admin/orders/${orderId}/status`, { status: orderStatus});
         toast.success(data.message || "Order updated successfully");
         await dispatch(getOrdersForDashboard());
     } catch (error) {
@@ -355,5 +355,99 @@ export const updateOrderStatusFromDashboard =
         toast.error(error?.response?.data?.message || "Internal Server Error");
     } finally {
         setLoader(false)
+    }
+};
+
+export const dashboardProductsAction = (queryString, isAdmin) => async (dispatch) => {
+    try {
+        dispatch({ type: "IS_FETCHING" });
+        const endpoint = isAdmin ? "/admin/products" : "/seller/products";
+        const { data } = await api.get(`/admin/products?${queryString}`);
+        dispatch({
+            type: "FETCH_PRODUCTS",
+            payload: data.content,
+            pageNumber: data.pageNumber,
+            pageSize: data.pageSize,
+            totalElements: data.totalElements,
+            totalPages: data.totalPages,
+            lastPage: data.lastPage,
+        });
+        dispatch({ type: "IS_SUCCESS" });
+    } catch (error) {
+        console.log(error);
+        dispatch({ 
+            type: "IS_ERROR",
+            payload: error?.response?.data?.message || "Failed to fetch dashboard products",
+         });
+    }
+};
+export const updateProductFromDashboard = 
+    (sendData, toast, reset, setLoader, setOpen, isAdmin) => async (dispatch) => {
+    try {
+        setLoader(true);
+        const endpoint = isAdmin ? "/admin/products/" : "/seller/products/";
+        await api.put(`/admin/products/${sendData.id}`, sendData);
+        toast.success("Product update successful");
+        reset();
+        setLoader(false);
+        setOpen(false);
+        await dispatch(dashboardProductsAction());
+    } catch (error) {
+        toast.error(error?.response?.data?.description || "Product update failed");
+     
+    }
+};
+
+export const addNewProductFromDashboard = 
+    (sendData, toast, reset, setLoader, setOpen, isAdmin) => async(dispatch, getState) => {
+        try {
+            setLoader(true);
+            const endpoint = isAdmin ? "/admin/categories/" : "/seller/categories/";
+            await api.post(`/admin/categories/}${sendData.categoryId}/product`,
+                sendData
+            );
+            toast.success("Product created successfully");
+            reset();
+            setOpen(false);
+            await dispatch(dashboardProductsAction());
+        } catch (error) {
+            console.error(err);
+            toast.error(err?.response?.data?.description || "Product creation failed");
+        } finally {
+            setLoader(false);
+        }
+    }
+
+export const deleteProduct = 
+    (setLoader, productId, toast, setOpenDeleteModal, isAdmin) => async (dispatch, getState) => {
+    try {
+        setLoader(true)
+        const endpoint = isAdmin ? "/admin/products/" : "/seller/products/";
+        await api.delete(`/admin/products/${productId}`);
+        toast.success("Product deleted successfully");
+        setLoader(false);
+        setOpenDeleteModal(false);
+        await dispatch(dashboardProductsAction());
+    } catch (error) {
+        console.log(error);
+        toast.error(
+            error?.response?.data?.message || "Some Error Occured"
+        )
+    }
+};
+
+export const updateProductImageFromDashboard = 
+    (formData, productId, toast, setLoader, setOpen, isAdmin) => async (dispatch) => {
+    try {
+        setLoader(true);
+        const endpoint = isAdmin ? "/admin/products/" : "/seller/products/";
+        await api.put(`/admin/products/${productId}/image`, formData);
+        toast.success("Image upload successful");
+        setLoader(false);
+        setOpen(false);
+        await dispatch(dashboardProductsAction());
+    } catch (error) {
+        toast.error(error?.response?.data?.description || "Product Image upload failed");
+     
     }
 };
